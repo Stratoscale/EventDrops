@@ -12,24 +12,27 @@ export default (config, xScale) => selection => {
             onClick,
             onMouseOver,
             onMouseOut,
+            key,
         },
     } = config;
 
     const drops = selection
-        .selectAll('.drop')
+        .selectAll('.drop', key)
         .data(filterOverlappingDrop(xScale, dropDate));
 
-    drops
+    const dropsEnter = drops
         .enter()
         .append('circle')
         .classed('drop', true)
-        .attr('r', dropRadius)
-        .attr('fill', dropColor)
         .on('click', onClick)
         .on('mouseover', onMouseOver)
-        .on('mouseout', onMouseOut)
+        .on('mouseout', onMouseOut);
+
+    dropsEnter
         .merge(drops)
-        .attr('cx', d => xScale(dropDate(d)));
+        .attr('cx', d => xScale(dropDate(d)))
+        .attr('r', dropRadius)
+        .attr('fill', dropColor);
 
     drops
         .exit()

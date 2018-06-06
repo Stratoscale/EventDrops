@@ -1,14 +1,13 @@
 import defaultsDeep from 'lodash.defaultsdeep';
-
 import axis from './axis';
 import bounds from './bounds';
 import defaultConfiguration from './config';
 import dropLine from './dropLine';
 import zoom from './zoom';
 import { addMetaballsDefs } from './metaballs';
-
 import './style.css';
 import { withinRange } from './withinRange';
+import { getShiftedTransform } from './utils';
 
 // do not export anything else here to keep window.eventDrops as a function
 export default ({ d3 = window.d3, ...customConfiguration }) => {
@@ -19,11 +18,9 @@ export default ({ d3 = window.d3, ...customConfiguration }) => {
         );
 
         const {
-            drops,
             zoom: zoomConfig,
-            drop: { onClick, onMouseOut, onMouseOver },
             metaballs,
-            label: { width: labelWidth },
+            label: { width: labelWidth, padding: labelsPadding },
             line: { height: lineHeight },
             range: { start: rangeStart, end: rangeEnd },
             margin,
@@ -32,12 +29,15 @@ export default ({ d3 = window.d3, ...customConfiguration }) => {
         const getEvent = () => d3.event; // keep d3.event mutable see https://github.com/d3/d3/issues/2733
 
         // Follow margins conventions (https://bl.ocks.org/mbostock/3019563)
-        const width = selection.node().clientWidth - margin.left - margin.right;
+        const width = selection.node().clientWidth; // - margin.left - margin.right;
 
         const xScale = d3
             .scaleTime()
             .domain([rangeStart, rangeEnd])
-            .range([0, width - labelWidth]);
+            .range([
+                labelWidth + labelsPadding,
+                width - margin.left - margin.right,
+            ]);
 
         chart._scale = xScale;
 
@@ -45,38 +45,51 @@ export default ({ d3 = window.d3, ...customConfiguration }) => {
 
         root.exit().remove();
 
-        const svg = root
+        const svgEnter = root
             .enter()
             .append('svg')
-            .attr('width', width)
             .classed('event-drop-chart', true);
 
-        if (zoomConfig) {
-            svg.call(zoom(d3, svg, config, xScale, draw, getEvent));
-        }
+        svgEnter.append('g').classed('viewport', true);
+
+        const svgUpdate = svgEnter.merge(root);
 
         if (metaballs) {
-            svg.call(addMetaballsDefs(config));
+            svgEnter.call(addMetaballsDefs(config));
         }
 
-        svg
-            .merge(root)
+        if (zoomConfig) {
+            svgUpdate.call(zoom(d3, svgUpdate, config, xScale, draw, getEvent));
+        }
+
+        const currentTransfom = getShiftedTransform(
+            d3.zoomTransform(svgUpdate.node()),
+            labelWidth,
+            labelsPadding,
+            d3
+        );
+        const newScale = currentTransfom.rescaleX(xScale);
+
+        svgUpdate
+            .attr('width', width)
             .attr(
                 'height',
                 d => (d.length + 1) * lineHeight + margin.top + margin.bottom
-            );
-
-        svg
-            .append('g')
-            .classed('viewport', true)
+            )
+            .select('.viewport')
             .attr('transform', `translate(${margin.left},${margin.top})`)
-            .call(draw(config, xScale));
+            .call(draw(config, newScale));
     };
 
     chart.scale = () => chart._scale;
     chart.filteredData = () => chart._filteredData;
 
-    const draw = (config, scale) => selection => {
+    const draw = (customConfiguration, scale = chart.scale()) => selection => {
+        const config = defaultsDeep(
+            customConfiguration || {},
+            defaultConfiguration(d3)
+        );
+
         const { drop: { date: dropDate } } = config;
 
         const dateBounds = scale.domain().map(d => new Date(d));

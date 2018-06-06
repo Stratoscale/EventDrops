@@ -1,19 +1,4 @@
-export const getShiftedTransform = (
-    originalTransform,
-    labelsWidth,
-    labelsPadding,
-    d3
-) => {
-    const fullLabelWidth = labelsWidth + labelsPadding;
-
-    const { x, y, k } = originalTransform;
-
-    return d3.zoomIdentity
-        .translate(-fullLabelWidth, 0) // move origin as if there were no labels
-        .translate(x, y) // apply zoom transformation panning
-        .scale(k) // apply zoom transformation scaling
-        .translate(labelsWidth + labelsPadding, 0); // put origin at its original position
-};
+import { getShiftedTransform } from './utils';
 
 export default (d3, svg, config, xScale, draw, getEvent) => {
     const {

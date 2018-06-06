@@ -33,7 +33,7 @@ export const tickFormat = (date, formats, d3) => {
 };
 
 export default (d3, config, xScale) => {
-    const { label: { width: labelWidth }, axis: { formats }, locale } = config;
+    const { axis: { formats }, locale } = config;
     d3.timeFormatDefaultLocale(locale);
     return selection => {
         const axis = selection.selectAll('.axis').data(d => d);
@@ -49,7 +49,7 @@ export default (d3, config, xScale) => {
             .filter((_, i) => !i)
             .append('g')
             .classed('axis', true)
-            .attr('transform', `translate(${labelWidth},0)`)
+            .merge(axis)
             .call(axisTop);
 
         axis.call(axisTop);

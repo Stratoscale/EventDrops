@@ -1,44 +1,36 @@
 export default (config, xScale) => selection => {
     const {
-        margin,
-        bound: { format: dateFormat },
-        label: { width: labelWidth },
+        bound: {
+            format: dateFormat,
+            location: boundsLocation,
+            height: boundsHeight,
+        },
         line: { height: lineHeight },
     } = config;
 
-    const bounds = selection.selectAll('.bound').data(d => d);
+    const bounds = selection.selectAll('.bound').data(['start', 'end']);
     const numberRows = selection.data()[0].length;
+    const boundsY =
+        boundsLocation === 'end'
+            ? lineHeight * numberRows + boundsHeight
+            : -boundsHeight;
 
     bounds.exit().remove();
 
-    bounds
+    const boundsEnter = bounds
         .enter()
-        .filter((_, i) => !i)
         .append('g')
         .classed('bound', true)
-        .classed('start', true)
-        .attr(
-            'transform',
-            `translate(${labelWidth}, ${lineHeight * numberRows + margin.top})`
-        )
-        .append('text')
-        .text(dateFormat(xScale.domain()[0]));
+        .classed('start', d => d === 'start')
+        .classed('end', d => d === 'end');
 
-    bounds
-        .enter()
-        .filter((_, i) => !i)
-        .append('g')
-        .classed('bound', true)
-        .classed('end', true)
-        .attr(
-            'transform',
-            `translate(${labelWidth}, ${lineHeight * numberRows + margin.top})`
-        )
-        .append('text')
-        .attr('x', xScale.range()[1] - margin.right)
-        .attr('text-anchor', 'end')
-        .text(dateFormat(xScale.domain()[1]));
+    boundsEnter.append('text');
 
-    bounds.selectAll('.bound.start text').text(dateFormat(xScale.domain()[0]));
-    bounds.selectAll('.bound.end text').text(dateFormat(xScale.domain()[1]));
+    boundsEnter
+        .merge(bounds)
+        .attr('transform', `translate(0, ${boundsY})`)
+        .select('text')
+        .attr('x', d => xScale.range()[d === 'start' ? 0 : 1])
+        .attr('text-anchor', d => d)
+        .text(d => dateFormat(xScale.domain()[d === 'start' ? 0 : 1]));
 };

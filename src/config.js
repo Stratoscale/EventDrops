@@ -8,6 +8,8 @@ export default d3 => ({
     },
     bound: {
         format: d3.timeFormat('%d %B %Y'),
+        location: 'end', // 'end' or 'start'
+        height: 20,
     },
     axis: {
         formats: {
@@ -29,6 +31,7 @@ export default d3 => ({
         onClick: () => {},
         onMouseOver: () => {},
         onMouseOut: () => {},
+        key: (d, i) => i,
     },
     label: {
         padding: 20,

@@ -79,14 +79,34 @@ const chart = eventDrops({
     },
 });
 
-const repositoriesData = repositories.map(repository => ({
+let limit = 2;
+setInterval(() => {
+    const data = repositories
+        .filter(r => limit % 2 === 0 || r.name !== 'sedy')
+        .map(repository => ({
+            name: repository.name,
+            data: repository.commits.slice(0, limit),
+        }));
+
+    d3
+        .select('#eventdrops-demo')
+        .data([data])
+        .call(chart);
+
+    limit = Math.min(
+        limit + 1,
+        d3.min(repositories, repository => repository.commits.length)
+    );
+}, 5000);
+
+let repositoriesData1 = repositories.map(repository => ({
     name: repository.name,
-    data: repository.commits,
+    data: repository.commits.slice(0, 1),
 }));
 
 d3
     .select('#eventdrops-demo')
-    .data([repositoriesData])
+    .data([repositoriesData1])
     .call(chart);
 
 updateCommitsInformation(chart);

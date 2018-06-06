@@ -107,8 +107,9 @@ describe('Drop Line', () => {
             dropLine(defaultConfig, defaultScale)(selection);
 
             const lineSeparator = document.querySelector('.line-separator');
-            expect(+lineSeparator.getAttribute('x1')).toBe(200);
-            expect(lineSeparator.getAttribute('x2')).toBe('100%');
+
+            expect(+lineSeparator.getAttribute('x1')).toBe(0);
+            expect(+lineSeparator.getAttribute('x2')).toBe(1);
         });
 
         it('should be correctly vertically positionned', () => {
@@ -152,7 +153,7 @@ describe('Drop Line', () => {
             // labels width - labels padding = 180
             expect(
                 +document.querySelector('.drop-line text').getAttribute('x')
-            ).toBe(180);
+            ).toBe(-20);
         });
 
         it('should be vertically centered', () => {

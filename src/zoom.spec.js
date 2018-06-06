@@ -1,4 +1,5 @@
-import zoomFactory, { getShiftedTransform } from './zoom';
+import zoomFactory from './zoom';
+import { getShiftedTransform } from './utils';
 
 const defaultConfig = {
     label: {},
@@ -24,7 +25,7 @@ describe('Zoom', () => {
             d3
         );
         expect(shiftedTransform.toString()).toBe(
-            'translate(-69.39999999999998,0) scale(1.23)'
+            'translate(-120,0) scale(1.23)'
         );
     });
 
