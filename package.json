@@ -68,7 +68,8 @@
     "karma": "karma start test/karma/karma.conf.js",
     "test": "jest",
     "test-watch": "jest --watch",
-    "run": "npm start"
+    "run": "npm start",
+    "build": "make build"
   },
   "lint-staged": {
     "*.{js,css,md}": [

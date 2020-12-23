@@ -17,7 +17,7 @@ export default ({
     global = window,
     ...customConfiguration
 }) => {
-    const initChart = selection => {
+    const initChart = (selection) => {
         selection.selectAll('svg').remove();
 
         const root = selection.selectAll('svg').data(selection.data());
@@ -72,7 +72,7 @@ export default ({
 
         svg.merge(root).attr(
             'height',
-            d => (d.length + 1) * lineHeight + margin.top + margin.bottom
+            (d) => (d.length + 1) * lineHeight + margin.top + margin.bottom
         );
 
         svg.append('g')
@@ -81,7 +81,7 @@ export default ({
             .call(draw(config, xScale));
     };
 
-    const chart = selection => {
+    const chart = (selection) => {
         chart._initialize = () => initChart(selection);
         chart._initialize();
 
@@ -95,20 +95,20 @@ export default ({
         callback();
     };
 
-    const draw = (config, scale) => selection => {
+    const draw = (config, scale) => (selection) => {
         const {
             drop: { date: dropDate },
         } = config;
 
-        const dateBounds = scale.domain().map(d => new Date(d));
-        const filteredData = selection.data().map(dataSet => {
+        const dateBounds = scale.domain().map((d) => new Date(d));
+        const filteredData = selection.data().map((dataSet) => {
             if (!Array.isArray(dataSet)) {
                 throw new Error(
                     'Selection data is not an array. Are you sure you provided an array of arrays to `data` function?'
                 );
             }
 
-            return dataSet.map(row => {
+            return dataSet.map((row) => {
                 if (!row.fullData) {
                     row.fullData = config.drops(row);
                     if (!row.fullData) {
@@ -118,7 +118,7 @@ export default ({
                     }
                 }
 
-                row.data = row.fullData.filter(d =>
+                row.data = row.fullData.filter((d) =>
                     withinRange(dropDate(d), dateBounds)
                 );
 
@@ -131,9 +131,9 @@ export default ({
 
         selection
             .data(filteredData)
+            .call(bounds(config, scale))
             .call(axis(d3, config, scale, chart.currentBreakpointLabel))
-            .call(dropLine(config, scale))
-            .call(bounds(config, scale));
+            .call(dropLine(config, scale));
     };
 
     chart.draw = draw;
