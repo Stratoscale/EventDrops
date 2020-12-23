@@ -1,14 +1,21 @@
 export default (config, xScale) => selection => {
     const {
         margin,
-        bound: { format: dateFormat },
+        bound: {
+            format: dateFormat,
+            location: boundsLocation,
+            height: boundsHeight = margin.top,
+        },
         label: { width: labelWidth },
         line: { height: lineHeight },
     } = config;
 
     const bounds = selection.selectAll('.bound').data(d => d);
     const numberRows = selection.data()[0].length;
-
+    const boundsY =
+        boundsLocation === 'end'
+            ? lineHeight * numberRows + boundsHeight
+            : -boundsHeight;
     bounds.exit().remove();
 
     const boundTextGroup = bounds
@@ -16,10 +23,7 @@ export default (config, xScale) => selection => {
         .filter((_, i) => !i)
         .append('g')
         .classed('bound', true)
-        .attr(
-            'transform',
-            `translate(${labelWidth}, ${lineHeight * numberRows + margin.top})`
-        );
+        .attr('transform', `translate(${labelWidth}, ${boundsY})`);
 
     boundTextGroup
         .append('text')
@@ -29,7 +33,7 @@ export default (config, xScale) => selection => {
     boundTextGroup
         .append('text')
         .classed('end', true)
-        .attr('x', xScale.range()[1] - margin.right)
+        .attr('x', xScale.range()[1])
         .attr('text-anchor', 'end')
         .text(dateFormat(xScale.domain()[1]));
 

@@ -74,17 +74,6 @@ describe('Axis', () => {
         expect(document.querySelectorAll('.axis').length).toBe(1);
     });
 
-    it('should be translated of `label.width` to the right', () => {
-        const selection = d3.select('svg').data([[{}, {}, {}]]);
-
-        axis(d3, defaultConfig, defaultScale, defaultBreakpointLabel)(
-            selection
-        );
-        expect(document.querySelector('.axis').getAttribute('transform')).toBe(
-            'translate(200,0)'
-        );
-    });
-
     it('should draw a D3 top axis using given scale', () => {
         const selection = d3.select('svg').data([[{}, {}]]);
 

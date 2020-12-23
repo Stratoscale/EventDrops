@@ -12,11 +12,12 @@ export default (config, xScale) => selection => {
             onClick,
             onMouseOver,
             onMouseOut,
+            key,
         },
     } = config;
 
     const drops = selection
-        .selectAll('.drop')
+        .selectAll('.drop', key)
         .data(filterOverlappingDrop(xScale, dropDate));
 
     drops

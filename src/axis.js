@@ -53,10 +53,12 @@ export default (d3, config, xScale, breakpointLabel) => {
         if (verticalGrid)
             axisTop.tickSizeInner(-(selection.data()[0].length * lineHeight));
 
-        axis.enter()
+        axis
+            .enter()
             .filter((_, i) => !i)
             .append('g')
             .classed('axis', true)
+            .merge(axis)
             .attr('transform', `translate(${labelWidth},0)`)
             .call(axisTop);
 

@@ -9,6 +9,8 @@ const defaultConfig = {
     },
     bound: {
         format: () => {},
+        location: 'end', // 'end' or 'start'
+        height: 20,
     },
     label: {
         width: 200,
@@ -39,9 +41,7 @@ describe('Bounds', () => {
 
         const startBound = document.querySelector('g.bound');
         // translate(labelsWidth, three rows of data * lineHeight + margin.top)
-        expect(startBound.getAttribute('transform')).toBe(
-            'translate(200, 130)'
-        );
+        expect(startBound.getAttribute('transform')).toBe('translate(0, 140)');
     });
 
     it('should display correctly formatted scale domain start as a start bound', () => {
@@ -103,7 +103,7 @@ describe('Bounds', () => {
         expect(endBound.getAttribute('text-anchor')).toBe('end');
 
         // rangeEnd - marginRight
-        expect(+endBound.getAttribute('x')).toBe(760);
+        expect(+endBound.getAttribute('x')).toBe(800);
     });
 
     afterEach(() => {

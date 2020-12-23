@@ -59,7 +59,7 @@ export default ({
         const svg = root
             .enter()
             .append('svg')
-            .attr('width', width)
+            .attr('width', width + margin.left + margin.right)
             .classed('event-drop-chart', true);
 
         if (zoomConfig) {
@@ -70,12 +70,15 @@ export default ({
             svg.call(addMetaballsDefs(config));
         }
 
-        svg.merge(root).attr(
-            'height',
-            d => (d.length + 1) * lineHeight + margin.top + margin.bottom
-        );
+        svg
+            .merge(root)
+            .attr(
+                'height',
+                d => (d.length + 1) * lineHeight + margin.top + margin.bottom
+            );
 
-        svg.append('g')
+        svg
+            .append('g')
             .classed('viewport', true)
             .attr('transform', `translate(${margin.left},${margin.top})`)
             .call(draw(config, xScale));
@@ -95,10 +98,12 @@ export default ({
         callback();
     };
 
-    const draw = (config, scale) => selection => {
-        const {
-            drop: { date: dropDate },
-        } = config;
+    const draw = (customConfiguration, scale) => selection => {
+        const config = defaultsDeep(
+            customConfiguration || {},
+            defaultConfiguration(d3)
+        );
+        const { drop: { date: dropDate } } = config;
 
         const dateBounds = scale.domain().map(d => new Date(d));
         const filteredData = selection.data().map(dataSet => {
