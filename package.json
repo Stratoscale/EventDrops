@@ -12,7 +12,7 @@
     "url": "https://github.com/marmelab/EventDrops"
   },
   "peerDependencies": {
-    "d3": "~4.7.0"
+    "d3": "~5.9.1"
   },
   "dependencies": {
     "d3-time-format": "^2.1.1",
